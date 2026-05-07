@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>野球部 遠征交通費管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --font-sans: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-info: #fdf8e6;
+  --bg-success: #ecfdf5;
+  --bg-warning: #fffbeb;
+  --bg-danger: #fef2f2;
+  --text-primary: #1a1f36;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-info: #a07c08;
+  --text-success: #059669;
+  --text-warning: #d97706;
+  --text-danger: #dc2626;
+  --border-primary: #d1d5db;
+  --border-secondary: #e5e7eb;
+  --border-tertiary: #f3f4f6;
+  --border-info: #e4ca6a;
+  --border-success: #a7f3d0;
+  --border-warning: #fcd34d;
+  --border-danger: #fecaca;
+  --green-dark: #0f2614;
+  --green-mid: #1a3d22;
+  --gold: #c9a227;
+  --gold-light: #fdf8e6;
+  --gold-border: #e4ca6a;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:#eef1ec;color:var(--text-primary);min-height:100vh}
+
+/* ── ヘッダー ── */
+.header{background:linear-gradient(135deg,#0f2614 0%,#1a3d22 100%);padding:14px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(15,38,20,.4)}
+.header-icon{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.header-title{color:#fff;font-size:16px;font-weight:700}
+.header-sub{color:rgba(255,255,255,.7);font-size:11px;margin-top:1px}
+
+/* ── メインレイアウト ── */
+.container{max-width:720px;margin:0 auto;padding:16px 12px 40px}
+
+/* ── タブ ── */
+.tabs{display:flex;background:#fff;border-radius:var(--radius-lg);padding:4px;gap:2px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow-x:auto}
+.tab{flex:1;min-width:fit-content;padding:8px 10px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text-secondary);border-radius:var(--radius-sm);transition:all .15s;white-space:nowrap;font-family:var(--font-sans)}
+.tab.active{background:linear-gradient(135deg,#0f2614,#1a3d22);color:#c9a227;box-shadow:0 2px 6px rgba(15,38,20,.3)}
+.tab:hover:not(.active){background:var(--bg-secondary)}
+.sec{display:none}.sec.active{display:block}
+
+/* ── カード ── */
+.card{background:var(--bg-primary);border:1px solid var(--border-secondary);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-title{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.03em}
+.car-card{border:1px solid var(--border-secondary);background:var(--bg-secondary);border-radius:var(--radius-md);padding:14px;margin-bottom:8px}
+.car-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.car-label{font-size:13px;font-weight:700;color:var(--text-primary)}
+
+/* ── フォーム ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:10px}
+label.lbl{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px;font-weight:500}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--radius-sm);
+  font-size:13px;font-family:var(--font-sans);color:var(--text-primary);background:#fff;
+  transition:border-color .15s,box-shadow .15s;outline:none}
+input:focus,select:focus{border-color:#c9a227;box-shadow:0 0 0 3px rgba(201,162,39,.15)}
+.hint{font-size:11px;color:var(--text-tertiary);margin-top:3px}
+
+/* ── 出発地 ── */
+.origin-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-tertiary)}
+.origin-row input{flex:1;border:none;background:transparent;padding:4px 0;font-size:13px;outline:none;color:var(--text-primary)}
+.origin-row input:focus{border-bottom:1px solid #c9a227}
+
+/* ── 経路バー ── */
+.route-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.rn{font-size:12px;padding:4px 10px;border-radius:100px;border:1px solid var(--border-secondary);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.rn.o{background:var(--bg-success);border-color:var(--border-success);color:var(--text-success)}
+.rn.d{background:var(--bg-info);border-color:var(--border-info);color:var(--text-info)}
+.maps-btn{font-size:12px;padding:5px 10px;border:1px solid var(--border-primary);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);background:#fff;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.maps-btn:hover{background:var(--bg-secondary)}
+
+/* ── 種別トグル ── */
+.type-toggle{display:flex;border:1px solid var(--border-primary);border-radius:var(--radius-sm);overflow:hidden}
+.type-btn{flex:1;padding:6px 16px;font-size:12px;border:none;background:none;cursor:pointer;color:var(--text-secondary);font-family:var(--font-sans);font-weight:500}
+.type-btn.sel{background:var(--bg-info);color:var(--text-info)}
+
+/* ── メンバー ── */
+.family-group{margin-bottom:12px}
+.family-label{font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:.04em}
+.member-tags{display:flex;flex-wrap:wrap;gap:5px}
+.member-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--bg-secondary);border:1px solid var(--border-secondary);border-radius:100px;font-size:12px;color:var(--text-primary)}
+.member-tag button{background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:14px;line-height:1;padding:0;display:flex;align-items:center}
+.member-tag button:hover{color:var(--text-danger)}
+.wb{display:inline-block;font-size:10px;padding:1px 6px;border-radius:100px;margin-left:2px}
+.wb-c{background:var(--bg-success);color:var(--text-success)}
+.wb-a{background:var(--bg-secondary);color:var(--text-tertiary);border:1px solid var(--border-secondary)}
+.wb-x{background:var(--bg-warning);color:var(--text-warning)}
+
+/* ── 経路ボタン ── */
+.rt-select{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.rt-opt{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border-secondary);border-radius:100px;cursor:pointer;font-size:12px;color:var(--text-secondary);background:#fff;-webkit-user-select:none;user-select:none;font-family:var(--font-sans);font-weight:500;transition:all .1s}
+.rt-opt:hover{border-color:var(--border-primary)}
+.rt-opt.sel{background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)}
+
+/* ── 同乗者 ── */
+.pax-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;min-height:38px;padding:8px;background:#fff;border:1px solid var(--border-secondary);border-radius:var(--radius-sm)}
+.pci{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border:1px solid var(--border-secondary);border-radius:100px;cursor:pointer;font-size:12px;color:var(--text-secondary);background:#fff;-webkit-user-select:none;user-select:none;font-family:var(--font-sans);transition:all .1s}
+.pci:hover{border-color:var(--border-info);color:var(--text-info)}
+.pci.sel{background:var(--bg-info);color:var(--text-info);border-color:var(--border-info)}
+.pci.other{opacity:.4;cursor:not-allowed;background:var(--bg-secondary)}
+.pci-w{font-size:10px;opacity:.7;margin-left:1px}
+
+/* ── 見積もり ── */
+.est{background:var(--bg-secondary);border-radius:var(--radius-md);padding:10px 12px;margin-top:10px;font-size:12px;border:1px solid var(--border-tertiary)}
+.est-row{display:flex;justify-content:space-between;color:var(--text-secondary);padding:2px 0}
+.est-total{display:flex;justify-content:space-between;border-top:1px solid var(--border-secondary);padding-top:6px;margin-top:4px;font-weight:700;font-size:13px}
+.wt{width:100%;font-size:11px;margin-top:8px;border-collapse:collapse}
+.wt td{padding:3px 4px;color:var(--text-secondary);border-bottom:1px solid var(--border-tertiary)}
+.wt .wn{color:var(--text-primary)}.wt .wa{text-align:right;font-weight:600;color:var(--text-primary)}
+
+/* ── ガソリン単価 ── */
+.gasrate-box{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-secondary);border:1px solid var(--border-secondary);border-radius:var(--radius-sm);margin-bottom:10px}
+.gasrate-box input{width:70px;text-align:right}
+
+/* ── 高速代リンク ── */
+.toll-row{display:flex;gap:6px;align-items:flex-end}
+.toll-row .field{flex:1;margin-bottom:0}
+.toll-links{display:flex;flex-direction:column;gap:3px}
+.tlink{font-size:11px;padding:5px 8px;border:1px solid var(--border-secondary);border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);background:#fff;display:block;text-align:center;font-family:var(--font-sans)}
+.tlink:hover{background:var(--bg-secondary)}
+
+/* ── ボタン ── */
+.add-car-btn{width:100%;padding:9px;border:2px dashed var(--border-primary);background:none;border-radius:var(--radius-md);cursor:pointer;font-size:13px;color:var(--text-secondary);margin-bottom:12px;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:5px}
+.add-car-btn:hover{background:var(--bg-secondary);border-color:var(--text-secondary)}
+.submit-btn{width:100%;padding:12px;background:linear-gradient(135deg,#0f2614,#1a3d22);color:#c9a227;border:none;border-radius:var(--radius-md);cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 8px rgba(15,38,20,.3)}
+.submit-btn:hover{opacity:.9}
+.add-btn-sm{padding:8px 16px;background:var(--bg-secondary);border:1px solid var(--border-secondary);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-secondary);white-space:nowrap;font-family:var(--font-sans);font-weight:500}
+.add-btn-sm:hover{background:#fff}
+.del-car{background:none;border:none;cursor:pointer;color:var(--text-tertiary);padding:4px 6px;border-radius:var(--radius-sm);font-size:16px;display:flex;align-items:center}
+.del-car:hover{color:var(--text-danger);background:var(--bg-danger)}
+
+/* ── 一覧 ── */
+.trip-item{border:1px solid var(--border-secondary);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.trip-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}
+.trip-head:hover{background:var(--bg-secondary)}
+.trip-body{padding:0 16px 14px;display:none}
+.trip-body.open{display:block}
+.car-row{background:var(--bg-secondary);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:6px;font-size:12px;border:1px solid var(--border-tertiary)}
+.car-row-head{display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:6px}
+.pax-chip{display:inline-block;background:#fff;border:1px solid var(--border-secondary);border-radius:100px;padding:2px 8px;font-size:11px;margin:1px 2px;color:var(--text-secondary)}
+.dr{display:flex;justify-content:space-between;font-size:11px;color:var(--text-tertiary);padding:2px 0}
+
+/* ── 精算 ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:14px}
+.stat{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px;text-align:center;border:1px solid var(--border-tertiary)}
+.stat-lbl{font-size:11px;color:var(--text-secondary);margin-bottom:4px;font-weight:500}
+.stat-val{font-size:20px;font-weight:700;color:var(--text-primary)}
+.settle-table{width:100%;font-size:13px;border-collapse:collapse;table-layout:fixed}
+.settle-table th{text-align:left;padding:8px;background:var(--bg-secondary);color:var(--text-secondary);border-bottom:2px solid var(--border-secondary);font-size:12px;font-weight:700}
+.settle-table td{padding:8px;border-bottom:1px solid var(--border-tertiary);word-break:break-all}
+.settle-table tr:last-child td{border-bottom:none}
+.fam-row{background:#fafbfc}
+.fam-row td{font-weight:700}
+.sub-row td{font-size:11px;color:var(--text-secondary);padding:4px 8px 4px 22px;border-bottom:1px solid var(--border-tertiary)}
+.section-title{font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:8px;margin-top:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flow-label{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700;white-space:nowrap}
+.fl-pay{background:var(--bg-info);color:var(--text-info)}
+.fl-collect{background:var(--bg-success);color:var(--text-success)}
+.fl-net{background:var(--bg-warning);color:var(--text-warning)}
+.net-fam-row td:first-child{font-weight:700}
+.net-recv{color:var(--text-info);font-weight:700}
+.net-pay{color:var(--text-success);font-weight:700}
+.net-zero{color:var(--text-tertiary)}
+
+/* ── データ ── */
+.gas-status{font-size:12px;margin-top:8px;padding:10px 12px;border-radius:var(--radius-md);border:1px solid transparent}
+.gas-ok{background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)}
+.gas-err{background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)}
+.gas-ing{background:var(--bg-secondary);color:var(--text-secondary);border-color:var(--border-secondary)}
+.exp-btn{font-size:12px;padding:8px 14px;border:1px solid var(--border-secondary);border-radius:var(--radius-sm);cursor:pointer;background:#fff;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px;font-family:var(--font-sans);font-weight:500}
+.exp-btn:hover{background:var(--bg-secondary)}
+.gas-sync-btn{padding:10px 20px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:var(--radius-md);cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);box-shadow:0 2px 6px rgba(5,150,105,.25)}
+.gas-sync-btn:hover{opacity:.9}
+.step-list{list-style:none;counter-reset:steps;margin:10px 0}
+.step-list li{counter-increment:steps;display:flex;gap:10px;margin-bottom:8px;font-size:12px;color:var(--text-secondary)}
+.step-list li::before{content:counter(steps);display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--bg-info);color:var(--text-info);font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.info-box{background:var(--bg-secondary);border-radius:var(--radius-md);padding:10px 12px;font-size:12px;color:var(--text-secondary);margin-top:10px;border:1px solid var(--border-secondary)}
+
+/* ── バナー等 ── */
+.sample-banner{font-size:12px;color:var(--text-warning);background:var(--bg-warning);padding:8px 12px;border-radius:var(--radius-md);margin-bottom:12px;display:flex;align-items:center;gap:6px;border:1px solid var(--border-warning)}
+.empty{text-align:center;padding:2.5rem;color:var(--text-tertiary);font-size:13px}
+.print-btn{font-size:13px;padding:7px 14px;border:1px solid var(--border-secondary);border-radius:var(--radius-sm);cursor:pointer;background:#fff;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px;font-family:var(--font-sans)}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;background:var(--bg-success);color:var(--text-success);vertical-align:middle;font-weight:700}
+.rt-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;background:var(--bg-warning);color:var(--text-warning);vertical-align:middle;margin-left:3px;font-weight:700}
+.no-mem{font-size:12px;color:var(--text-tertiary);padding:6px;width:100%}
+code{font-size:11px;background:var(--bg-secondary);padding:1px 5px;border-radius:3px;color:var(--text-primary)}
+.del-trip{background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:14px;display:flex;align-items:center}
+.del-trip:hover{color:var(--text-danger)}
+
+@media print {
+  .header,.tabs{display:none}
+  .card{box-shadow:none;border:1px solid #ccc}
+  .section-title{margin-top:10px}
+}
+@media (max-width:480px){
+  .g2{grid-template-columns:1fr}
+  .tabs .tab{padding:7px 8px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="font-size:24px;font-weight:900;color:#c9a227;letter-spacing:-1px;font-style:italic;opacity:.9;flex-shrink:0;margin-right:4px">R's</div>
+  <div style="flex:1;min-width:0">
+    <div class="header-title">Rhymesters</div>
+    <div class="header-sub">遠征交通費管理ツール</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab" onclick="showTab('members')"><i class="ti ti-users"></i> メンバー</button>
+    <button class="tab active" onclick="showTab('input')"><i class="ti ti-plus"></i> 遠征入力</button>
+    <button class="tab" onclick="showTab('list')"><i class="ti ti-list"></i> 記録一覧</button>
+    <button class="tab" onclick="showTab('settle')"><i class="ti ti-calculator"></i> 月次精算</button>
+    <button class="tab" onclick="showTab('data')"><i class="ti ti-database"></i> データ</button>
+  </div>
+
+  <!-- メンバー -->
+  <div id="tab-members" class="sec">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-users"></i> 保護者・子供メンバー</div>
+      <div id="member-list-display"></div>
+      <div style="border-top:1px solid var(--border-tertiary);padding-top:14px;margin-top:6px">
+        <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.03em">メンバーを追加</div>
+        <div class="g2" style="margin-bottom:10px">
+          <div class="field" style="margin:0"><label class="lbl">氏名</label><input type="text" id="new-name" placeholder="例：田中" onkeydown="if(event.key==='Enter')addMember()"></div>
+          <div class="field" style="margin:0"><label class="lbl">家族名（任意）</label><input type="text" id="new-family" placeholder="例：田中家" list="family-datalist"><datalist id="family-datalist"></datalist></div>
+        </div>
+        <div class="g2" style="margin-bottom:10px">
+          <div class="field" style="margin:0"><label class="lbl">種別</label><div class="type-toggle"><button class="type-btn sel" id="type-adult" onclick="selectNewType('adult')">大人</button><button class="type-btn" id="type-child" onclick="selectNewType('child')">子供</button></div></div>
+          <div class="field" style="margin:0"><label class="lbl">人数重み（変更可）</label><div style="display:flex;align-items:center;gap:8px"><input type="number" id="new-weight" value="1.0" min="0.1" max="3.0" step="0.1" style="width:80px" oninput="this.dataset.touched='1'"><span style="font-size:12px;color:var(--text-tertiary)">人分</span></div><div class="hint">大人=1.0 / 子供=0.5が標準</div></div>
+        </div>
+        <button class="add-btn-sm" onclick="addMember()" style="width:100%;text-align:center;padding:10px"><i class="ti ti-plus"></i> 追加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 遠征入力 -->
+  <div id="tab-input" class="sec active">
+    <div id="no-members-warn" style="display:none" class="card" style="border-color:var(--border-warning)">
+      <div style="font-size:13px;color:var(--text-warning);display:flex;align-items:center;gap:6px"><i class="ti ti-alert-triangle"></i> まず「メンバー」タブで保護者を登録してください</div>
+      <button style="margin-top:10px;font-size:12px;padding:6px 14px;border:1px solid var(--border-warning);border-radius:var(--radius-sm);background:none;cursor:pointer;color:var(--text-warning);font-family:var(--font-sans)" onclick="showTab('members')">メンバー登録へ →</button>
+    </div>
+    <div id="input-form">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-calendar"></i> 遠征情報</div>
+        <div class="origin-row">
+          <i class="ti ti-map-pin-filled" style="color:var(--text-success);font-size:15px;flex-shrink:0"></i>
+          <span style="font-size:12px;color:var(--text-tertiary);white-space:nowrap;font-weight:500">出発地</span>
+          <input type="text" id="f-origin" oninput="updateRouteBar()" style="border:none;background:transparent">
+        </div>
+        <div class="field">
+          <label class="lbl"><i class="ti ti-map-pin" style="color:var(--text-info);font-size:13px;vertical-align:-2px"></i> 行き先（目的地）</label>
+          <input type="text" id="f-dest" placeholder="例：横浜スタジアム" oninput="updateRouteBar()">
+        </div>
+        <div class="route-bar" id="route-bar" style="display:none">
+          <span class="rn o" id="rb-origin"></span>
+          <i class="ti ti-arrow-right" style="font-size:13px;color:var(--text-tertiary)"></i>
+          <span class="rn d" id="rb-dest"></span>
+          <a href="#" class="maps-btn" onclick="openRouteMaps(event)"><i class="ti ti-map"></i> Maps で開く</a>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">日付</label><input type="date" id="f-date"></div>
+          <div class="field"><label class="lbl">メモ（対戦相手など）</label><input type="text" id="f-memo" placeholder="例：vs 南中学校"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">距離（km・片道）</label><input type="number" id="f-dist" placeholder="例：25" min="0" oninput="refreshAllEst()"><div class="hint">Mapsのルートで確認してください</div></div>
+          <div class="field"><label class="lbl">ガソリン単価（円/km）</label>
+            <div class="gasrate-box">
+              <i class="ti ti-gas-station" style="color:var(--text-tertiary)"></i>
+              <input type="number" id="f-gasrate" value="30" min="1" max="999" step="1" oninput="refreshAllEst()" style="border:none;background:transparent;width:60px">
+              <span style="font-size:12px;color:var(--text-secondary)">円/km</span>
+              <span style="font-size:11px;color:var(--text-tertiary)" id="gasrate-formula"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;gap:5px"><i class="ti ti-car"></i> 車ごとの情報</div>
+      <div id="cars-form"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="add-car-btn" style="margin-bottom:0;flex:1" onclick="addFormCar(false)"><i class="ti ti-car"></i> 保護者の車を追加</button>
+        <button class="add-car-btn" style="margin-bottom:0;flex:1;border-color:#a5d6a7;color:#2e7d32" onclick="addFormCar(true)"><i class="ti ti-bus"></i> チーム車両を追加</button>
+      </div>
+      <div id="pool-est"></div>
+      <button class="submit-btn" onclick="submitTrip()"><i class="ti ti-check"></i> この遠征を記録に追加</button>
+    </div>
+  </div>
+
+  <!-- 記録一覧 -->
+  <div id="tab-list" class="sec">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:15px;font-weight:700">遠征記録</div>
+      <select id="list-month" onchange="renderList()" style="font-size:13px;width:auto"><option value="">すべて</option></select>
+    </div>
+    <div id="list-body"><div class="empty">記録がありません</div></div>
+  </div>
+
+  <!-- 月次精算 -->
+  <div id="tab-settle" class="sec">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:15px;font-weight:700">月次精算書</div>
+      <div style="display:flex;gap:8px">
+        <select id="settle-month" onchange="renderSettle()" style="font-size:13px;width:auto"><option value="">月を選択</option></select>
+        <button class="print-btn" onclick="window.print()"><i class="ti ti-printer"></i> 印刷</button>
+      </div>
+    </div>
+    <div id="settle-body"><div class="empty">月を選択してください</div></div>
+  </div>
+
+  <!-- データ管理 -->
+  <div id="tab-data" class="sec">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-brand-google"></i> Googleスプレッドシート自動同期</div>
+      <div class="field"><label class="lbl">GAS デプロイURL</label><input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/..." oninput="lsSet('bpB_gas_url',this.value)"><div class="hint">GASをウェブアプリとしてデプロイしてURLを貼り付けてください</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="gas-sync-btn" onclick="syncToGAS()"><i class="ti ti-brand-google"></i> シートへ同期（Push）</button>
+        <button class="gas-sync-btn" style="background:linear-gradient(135deg,#1a3d22,#2d6a35)" onclick="loadFromGAS(false)"><i class="ti ti-cloud-download"></i> GASから読み込む（Pull）</button>
+      </div>
+      <div id="sync-status"></div>
+      <div id="load-status"></div>
+      <div class="info-box">
+        <strong>📌 4人で共有する場合の手順：</strong><br>
+        <span style="color:var(--text-success);font-weight:700">① 入力前</span> に「GASから読み込む」で最新データを取得<br>
+        <span style="color:var(--text-info);font-weight:700">② 入力後</span> に「シートへ同期」でデータをGASへ送信<br>
+        <span style="font-size:11px;color:var(--text-tertiary)">※ 同時に複数人が「同期」すると後から送った側のデータが残ります。入力前に必ずPullしてください。</span>
+      </div>
+      <div style="margin-top:12px;border-top:1px solid var(--border-tertiary);padding-top:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em">GASセットアップ手順</div>
+        <ol class="step-list">
+          <li>Googleスプレッドシートを新規作成する</li>
+          <li>メニュー「拡張機能」&gt;「Apps Script」でエディタを開く</li>
+          <li><code>baseball_transport_GAS.gs</code> の内容を貼り付けて保存</li>
+          <li>「デプロイ」&gt;「新しいデプロイ」&gt;「ウェブアプリ」を選択</li>
+          <li>「次のユーザーとして実行：自分」「アクセス：全員」に設定してデプロイ</li>
+          <li>表示されたURLをコピーして上の欄に貼り付ける</li>
+          <li>「今すぐ同期」ボタンを押す</li>
+        </ol>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-download"></i> エクスポート</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+        <button class="exp-btn" onclick="exportCSV()"><i class="ti ti-file-spreadsheet"></i> CSV（定期エクスポート）</button>
+        <button class="exp-btn" onclick="exportJSON()"><i class="ti ti-file-code"></i> JSON（バックアップ）</button>
+      </div>
+      <div class="hint">月次精算後の定期保存にご活用ください。CSVはGoogleシートやExcelで開けます。</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-upload"></i> JSONからインポート（復元）</div>
+      <input type="file" id="import-file" accept=".json" style="font-size:13px;margin-bottom:10px">
+      <button class="exp-btn" onclick="importJSON()"><i class="ti ti-restore"></i> インポート実行</button>
+      <div class="hint" style="margin-top:6px">⚠️ 現在のデータが上書きされます</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  定数
+// ═══════════════════════════════════════════════
+const DEFAULT_ORIGIN = 'tsuzuki BASE(新羽町287)';
+const RT = [
+  {val:'roundtrip',label:'往復',     mult:2},
+  {val:'outbound', label:'往路のみ', mult:1},
+  {val:'return',   label:'復路のみ', mult:1}
+];
+
+// ═══════════════════════════════════════════════
+//  ストレージ
+// ═══════════════════════════════════════════════
+function lsGet(k,fb){try{const v=localStorage.getItem(k);return v!==null?v:fb;}catch(e){return fb;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsGetJ(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
+function lsSetJ(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+function loadData(){
+  const rM=lsGet('bpB_members',null), rT=lsGet('bpB_trips',null);
+  return{
+    members: rM?JSON.parse(rM):[],
+    trips:   rT?JSON.parse(rT):[]
+  };
+}
+const ld=loadData();
+let members=ld.members, trips=ld.trips, isSample=false;
+let fCars=[], carSeq=0, newType='adult';
+
+function saveM(){lsSetJ('bpB_members',members);}
+function saveT(){lsSetJ('bpB_trips',trips);}
+function yen(n){return '¥'+Math.round(n).toLocaleString();}
+function yenD(n){return '¥'+(Math.round(n*10)/10).toLocaleString();}
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function rtMult(v){return(RT.find(o=>o.val===v)||RT[2]).mult;}
+function rtLabel(v){return(RT.find(o=>o.val===v)||RT[2]).label;}
+
+function getMember(name){
+  const m=members.find(m=>(m.name||m)===name);
+  if(!m) return{name,type:'adult',weight:1.0,family:''};
+  if(typeof m==='string') return{name:m,type:'adult',weight:1.0,family:''};
+  return{weight:1.0,...m};
+}
+function mWeight(name){return getMember(name).weight||1.0;}
+function mFamily(name){return getMember(name).family||'';}
+function memberNames(){return members.map(m=>typeof m==='string'?m:m.name);}
+function familyList(){return[...new Set(members.map(m=>m.family||'').filter(Boolean))];}
+function carGas(dist,rt,gr){return(parseFloat(dist)||0)*rtMult(rt)*(parseFloat(gr)||30);}
+function carBaseTotal(dist,rt,gr,toll,park){return carGas(dist,rt,gr)+(parseFloat(toll)||0)+(parseFloat(park)||0);}
+function calcWeighted(dist,rt,gr,toll,park,driverName,paxNames){
+  const total=carBaseTotal(dist,rt,gr,toll,park), dw=mWeight(driverName);
+  const pwList=paxNames.map(p=>({name:p,w:mWeight(p)}));
+  const sumPW=pwList.reduce((s,p)=>s+p.w,0), totalW=dw+sumPW, perUnit=totalW>0?total/totalW:0;
+  return{total,totalW,perUnit,driverShare:perUnit*dw,driverReceives:perUnit*sumPW,
+    paxAmounts:pwList.map(p=>({name:p.name,w:p.w,amount:perUnit*p.w}))};
+}
+
+// ── 全体プール計算（新精算方式）──────────────────────
+// 全車費用を合算し、全参加者の重みで均等割り
+// driverNet = その車の費用 − ドライバー自身の個人負担
+function calcTripPooled(dist,gr,cars){
+  const carCosts=(cars||[]).map(c=>{
+    const rt=c.rt||'roundtrip';
+    const pax=Array.isArray(c.passengers)?c.passengers:[...c.passengers];
+    const isTeam=!!c.isTeam;
+    const total=isTeam?0:carBaseTotal(dist,rt,gr,c.toll||0,c.parking||0);
+    return{driver:c.driver,passengers:pax,rt,toll:c.toll||0,parking:c.parking||0,total,isTeam};
+  });
+  const grandTotal=carCosts.reduce((s,c)=>s+c.total,0);
+  const seen=new Set(), participants=[];
+  carCosts.forEach(c=>{
+    if(c.driver&&!seen.has(c.driver)){seen.add(c.driver);participants.push({name:c.driver,w:mWeight(c.driver)});}
+    c.passengers.forEach(p=>{if(!seen.has(p)){seen.add(p);participants.push({name:p,w:mWeight(p)});}});
+  });
+  const totalW=participants.reduce((s,p)=>s+p.w,0);
+  const perUnit=totalW>0?grandTotal/totalW:0;
+  const shares={};
+  participants.forEach(p=>{shares[p.name]=perUnit*p.w;});
+  const driverNet={};
+  carCosts.forEach(c=>{if(c.driver) driverNet[c.driver]=c.total-(shares[c.driver]||0);});
+  return{grandTotal,totalW,perUnit,shares,carCosts,participants,driverNet};
+}
+
+// ═══════════════════════════════════════════════
+//  タブ
+// ═══════════════════════════════════════════════
+function showTab(n){
+  const names=['members','input','list','settle','data'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===n));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='input') checkWarn();
+  if(n==='list')  renderList();
+  if(n==='settle') renderSettle();
+  if(n==='members'){renderMemberList(); showSampleBanner();}
+}
+function checkWarn(){
+  const w=!members.length;
+  document.getElementById('no-members-warn').style.display=w?'block':'none';
+  document.getElementById('input-form').style.display=w?'none':'block';
+}
+function showSampleBanner(){
+  const b=document.getElementById('sample-banner-m');
+  if(b) b.style.display=isSample?'flex':'none';
+}
+
+// ═══════════════════════════════════════════════
+//  経路バー
+// ═══════════════════════════════════════════════
+function getOrigin(){return document.getElementById('f-origin').value.trim();}
+function getDest(){return document.getElementById('f-dest').value.trim();}
+function buildMapsUrl(o,d){
+  return 'https://www.google.com/maps/dir/?api=1&travelmode=driving'
+    +(o?'&origin='+encodeURIComponent(o):'')
+    +(d?'&destination='+encodeURIComponent(d):'');
+}
+function updateRouteBar(){
+  const o=getOrigin(), d=getDest(), bar=document.getElementById('route-bar');
+  if(!o&&!d){bar.style.display='none'; return;}
+  bar.style.display='flex';
+  const ro=document.getElementById('rb-origin'), rd=document.getElementById('rb-dest');
+  ro.textContent=o||'出発地未入力'; ro.style.opacity=o?1:.5;
+  rd.textContent=d||'行き先未入力'; rd.style.opacity=d?1:.5;
+}
+function openRouteMaps(e){e.preventDefault(); window.open(buildMapsUrl(getOrigin(),getDest()),'_blank');}
+function openTollMaps(){
+  const d=getDest();
+  if(!d){alert('先に行き先を入力してください'); return;}
+  window.open(buildMapsUrl(getOrigin(),d),'_blank');
+}
+function openNexco(){window.open('https://www.driveplaza.com/dp/SearchTop','_blank');}
+
+// ═══════════════════════════════════════════════
+//  メンバー
+// ═══════════════════════════════════════════════
+function selectNewType(t){
+  newType=t;
+  document.getElementById('type-adult').classList.toggle('sel',t==='adult');
+  document.getElementById('type-child').classList.toggle('sel',t==='child');
+  const w=document.getElementById('new-weight');
+  if(w&&!w.dataset.touched) w.value=t==='child'?'0.5':'1.0';
+}
+function addMember(){
+  const name=document.getElementById('new-name').value.trim();
+  if(!name) return;
+  if(memberNames().includes(name)){alert('すでに登録されています'); return;}
+  const family=document.getElementById('new-family').value.trim();
+  const weight=parseFloat(document.getElementById('new-weight').value)||1.0;
+  if(isSample){members=[];trips=[];isSample=false;lsSet('bpB_issample','0');}
+  members.push({name,type:newType,weight,family});
+  saveM();
+  document.getElementById('new-name').value='';
+  document.getElementById('new-weight').value='1.0';
+  document.getElementById('new-weight').dataset.touched='';
+  selectNewType('adult');
+  renderMemberList(); updateFamilyDatalist(); showSampleBanner();
+  fCars.forEach(c=>{renderDriverSelect(c.id); renderPaxOnly(c.id);});
+}
+function deleteMember(name){
+  if(!confirm('「'+name+'」を削除しますか？')) return;
+  members=members.filter(m=>(m.name||m)!==name);
+  saveM(); renderMemberList(); updateFamilyDatalist();
+}
+function weightBadge(m){
+  const w=m.weight||1.0;
+  const def=(m.type==='child'&&w===0.5)||(m.type==='adult'&&w===1.0);
+  if(m.type==='child') return '<span class="wb wb-c">子 ×'+w+'</span>';
+  if(!def) return '<span class="wb wb-x">×'+w+'</span>';
+  return '<span class="wb wb-a">大人 ×1</span>';
+}
+function updateFamilyDatalist(){
+  const dl=document.getElementById('family-datalist');
+  if(dl) dl.innerHTML=familyList().map(f=>'<option value="'+f+'">').join('');
+}
+function renderMemberList(){
+  const el=document.getElementById('member-list-display');
+  if(!members.length){el.innerHTML='<div class="empty" style="padding:1.5rem">メンバーが登録されていません</div>'; return;}
+  const groups={};
+  members.forEach(m=>{const k=m.family||''; if(!groups[k]) groups[k]=[]; groups[k].push(m);});
+  let html='';
+  Object.entries(groups).filter(([k])=>k).forEach(([fam,mems])=>{
+    html+='<div class="family-group"><div class="family-label"><i class="ti ti-home" style="font-size:12px"></i> '+fam+'</div>'
+      +'<div class="member-tags">'+mems.map(m=>'<span class="member-tag">'+m.name+weightBadge(m)+'<button onclick="deleteMember(\''+esc(m.name)+'\')"><i class="ti ti-x"></i></button></span>').join('')+'</div></div>';
+  });
+  const nf=groups['']||[];
+  if(nf.length){
+    html+='<div class="family-group"><div class="family-label"><i class="ti ti-user" style="font-size:12px"></i> 家族未設定</div>'
+      +'<div class="member-tags">'+nf.map(m=>'<span class="member-tag">'+m.name+weightBadge(m)+'<button onclick="deleteMember(\''+esc(m.name)+'\')"><i class="ti ti-x"></i></button></span>').join('')+'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+//  車フォーム
+// ═══════════════════════════════════════════════
+function syncAllCars(){
+  fCars.forEach(c=>{
+    const te=document.getElementById('toll-'+c.id);
+    const pe=document.getElementById('park-'+c.id);
+    if(te) c.toll=parseFloat(te.value)||0;
+    if(pe) c.parking=parseFloat(pe.value)||0;
+  });
+}
+// 経路が重複するか判定（往路↔復路は重複なし、往復は常に重複）
+function routesConflict(rt1,rt2){
+  const r1=rt1||'roundtrip', r2=rt2||'roundtrip';
+  if(r1==='roundtrip'||r2==='roundtrip') return true;
+  return r1===r2; // 両方が同じ片道方向のみ競合
+}
+function otherPax(xid){
+  const thisCar=fCars.find(c=>c.id===xid);
+  const thisRt=thisCar?thisCar.rt||'roundtrip':'roundtrip';
+  return new Set(
+    fCars.filter(c=>c.id!==xid&&routesConflict(thisRt,c.rt||'roundtrip'))
+      .flatMap(c=>[c.driver,...c.passengers].filter(Boolean))
+  );
+}
+function addFormCar(isTeam){
+  if(!members.length){showTab('members'); return;}
+  syncAllCars();
+  fCars.push({id:++carSeq,driver:'',passengers:new Set(),toll:0,parking:0,rt:'roundtrip',isTeam:!!isTeam});
+  renderFormCars();
+}
+function setCarType(id,isTeam){
+  const c=fCars.find(c=>c.id===id); if(!c) return;
+  c.isTeam=isTeam;
+  if(isTeam){c.toll=0;c.parking=0;}
+  renderFormCars();
+  fCars.forEach(x=>renderPaxOnly(x.id));
+}
+function removeFormCar(id){
+  syncAllCars(); fCars=fCars.filter(c=>c.id!==id); renderFormCars();
+  fCars.forEach(c=>renderPaxOnly(c.id));
+}
+function setRt(id,val){
+  const c=fCars.find(c=>c.id===id); if(!c) return;
+  c.rt=val;
+  RT.forEach(o=>{const b=document.getElementById('rb-'+id+'-'+o.val); if(b) b.classList.toggle('sel',o.val===val);});
+  fCars.forEach(c=>renderPaxOnly(c.id)); // 経路変更で他車の同乗者欄も更新
+  renderEst(id);
+}
+function renderDriverSelect(id){
+  const c=fCars.find(c=>c.id===id), el=document.getElementById('driver-'+id);
+  if(!c||!el) return;
+  const otherDrivers=new Set(fCars.filter(x=>x.id!==id).map(x=>x.driver).filter(Boolean));
+  const opts=memberNames().filter(m=>!otherDrivers.has(m))
+    .map(m=>'<option value="'+m+'"'+(c.driver===m?' selected':'')+'>'+m+(mWeight(m)!==1.0?' (×'+mWeight(m)+')':'')+'</option>').join('');
+  el.innerHTML='<option value="">-- 選択してください --</option>'+opts;
+}
+function setDriver(id,val){
+  const c=fCars.find(c=>c.id===id); if(!c) return;
+  c.driver=val; c.passengers.delete(val);
+  fCars.forEach(c=>{renderDriverSelect(c.id); renderPaxOnly(c.id);}); renderEst(id);
+}
+function togglePax(id,name){
+  const c=fCars.find(c=>c.id===id); if(!c) return;
+  if(c.passengers.has(name)) c.passengers.delete(name); else c.passengers.add(name);
+  fCars.forEach(c=>renderPaxOnly(c.id)); renderEst(id);
+}
+function renderPaxOnly(id){
+  const c=fCars.find(c=>c.id===id), el=document.getElementById('pax-area-'+id);
+  if(!c||!el) return;
+  if(!c.driver){el.innerHTML='<span class="no-mem">先にドライバーを選択してください</span>'; return;}
+  const op=otherPax(id), avail=memberNames().filter(m=>m!==c.driver);
+  if(!avail.length){el.innerHTML='<span class="no-mem">他のメンバーがいません</span>'; return;}
+  el.innerHTML=avail.map(m=>{
+    const sel=c.passengers.has(m), inOther=op.has(m);
+    const wl=mWeight(m)!==1.0?'<span class="pci-w">×'+mWeight(m)+'</span>':'';
+    if(inOther) return '<span class="pci other"><i class="ti ti-circle" style="font-size:11px"></i>'+m+wl+'</span>';
+    return '<label class="pci'+(sel?' sel':'')+'" onclick="togglePax('+id+',\''+esc(m)+'\')">'
+      +'<i class="ti '+(sel?'ti-check':'ti-circle')+'" style="font-size:11px"></i>'+m+wl+'</label>';
+  }).join('');
+}
+function getDist(){return parseFloat(document.getElementById('f-dist').value)||0;}
+function getGasRate(){return parseFloat(document.getElementById('f-gasrate').value)||30;}
+function updateFormula(){
+  const d=getDist(), gr=getGasRate(), el=document.getElementById('gasrate-formula');
+  if(el) el.textContent=d?('= '+d+'km × '+gr+'円'):'';
+}
+function renderEst(id){
+  const c=fCars.find(c=>c.id===id), el=document.getElementById('est-'+id);
+  if(!c||!el) return;
+  updateFormula();
+  if(c.isTeam){renderPoolEst(); return;}
+  const dist=getDist(), gr=getGasRate();
+  const toll=parseFloat((document.getElementById('toll-'+id)||{}).value)||c.toll||0;
+  const park=parseFloat((document.getElementById('park-'+id)||{}).value)||c.parking||0;
+  if(!dist){el.innerHTML='<div class="hint" style="margin-top:6px">距離を入力すると費用を計算します</div>'; renderPoolEst(); return;}
+  const rt=c.rt||'roundtrip';
+  const km=dist*rtMult(rt);
+  const carTotal=carBaseTotal(dist,rt,gr,toll,park);
+  el.innerHTML='<div class="est">'
+    +'<div class="est-row"><span>ガソリン代（'+km+'km × '+gr+'円）</span><span>'+yen(carGas(dist,rt,gr))+'</span></div>'
+    +'<div class="est-row"><span>高速代</span><span>'+yen(toll)+'</span></div>'
+    +'<div class="est-row"><span>駐車場代</span><span>'+yen(park)+'</span></div>'
+    +'<div class="est-total"><span>この車の費用（全体プールに合算）</span><span>'+yen(carTotal)+'</span></div>'
+    +'</div>';
+  renderPoolEst();
+}
+function renderPoolEst(){
+  const el=document.getElementById('pool-est');
+  if(!el) return;
+  const dist=getDist(), gr=getGasRate();
+  if(!dist||!fCars.length||!fCars.some(c=>c.driver)){el.innerHTML=''; return;}
+  const carsSnap=fCars.map(c=>({
+    driver:c.driver,
+    passengers:[...c.passengers],
+    rt:c.rt,
+    isTeam:c.isTeam||false,
+    toll:parseFloat((document.getElementById('toll-'+c.id)||{}).value)||c.toll||0,
+    parking:parseFloat((document.getElementById('park-'+c.id)||{}).value)||c.parking||0,
+  }));
+  const P=calcTripPooled(dist,gr,carsSnap);
+  if(!P.participants.length||P.grandTotal===0){el.innerHTML=''; return;}
+  const privateDriverSet=new Set(P.carCosts.filter(c=>!c.isTeam&&c.driver).map(c=>c.driver));
+  const teamDriverSet=new Set(P.carCosts.filter(c=>c.isTeam&&c.driver).map(c=>c.driver));
+  const drvRows=P.carCosts.filter(c=>!c.isTeam&&c.driver).map(c=>{
+    const net=P.driverNet[c.driver]||0;
+    return '<tr><td class="wn">'+c.driver+'<span style="font-size:10px;color:var(--text-tertiary);margin-left:3px">運転</span></td>'
+      +'<td style="color:var(--text-tertiary)">×'+mWeight(c.driver)+'</td>'
+      +'<td class="wa" style="color:var(--text-tertiary)">個人負担 '+yen(P.shares[c.driver]||0)+'</td>'
+      +'<td class="wa" style="color:var(--text-info);font-weight:700">受取 '+yen(net)+'</td></tr>';
+  }).join('');
+  const teamRows=P.carCosts.filter(c=>c.isTeam&&c.driver).map(c=>{
+    const members=[c.driver,...c.passengers].filter(Boolean);
+    return members.map(name=>'<tr><td class="wn">'+name+(name===c.driver?'<span style="font-size:10px;color:#2e7d32;margin-left:3px">チーム車両</span>':'')+'</td>'
+      +'<td style="color:var(--text-tertiary)">×'+mWeight(name)+'</td>'
+      +'<td class="wa" colspan="2" style="color:var(--text-success)">支払 '+yen(P.shares[name]||0)+'</td></tr>').join('');
+  }).join('');
+  const paxRows=P.participants.filter(p=>!privateDriverSet.has(p.name)&&!teamDriverSet.has(p.name)&&!P.carCosts.filter(c=>c.isTeam).flatMap(c=>c.passengers).includes(p.name)).map(p=>{
+    return '<tr><td class="wn">'+p.name+'</td>'
+      +'<td style="color:var(--text-tertiary)">×'+p.w+'</td>'
+      +'<td class="wa" colspan="2" style="color:var(--text-success)">支払 '+yen(P.shares[p.name])+'</td></tr>';
+  }).join('');
+  const privateCars=fCars.filter(c=>!c.isTeam&&c.driver).length;
+  const teamCars=fCars.filter(c=>c.isTeam&&c.driver).length;
+  const carLabel=privateCars+'台'+(teamCars?'＋チーム車両'+teamCars+'台':'');
+  el.innerHTML='<div class="card" style="background:var(--bg-info);border-color:var(--border-info);padding:14px 16px;margin-bottom:12px">'
+    +'<div style="font-size:12px;font-weight:700;color:var(--text-info);margin-bottom:8px">全体プール精算（'+P.participants.length+'名・'+carLabel+'）</div>'
+    +'<div class="est-row" style="font-size:12px"><span>保護者の車 合計費用</span><span style="font-weight:700">'+yen(P.grandTotal)+'</span></div>'
+    +(teamCars?'<div class="est-row" style="font-size:12px;color:#2e7d32"><span>チーム車両費用</span><span>チーム負担（¥0）</span></div>':'')
+    +'<div class="est-row" style="font-size:12px"><span>重み合計</span><span>'+Math.round(P.totalW*10)/10+' 人分</span></div>'
+    +'<div class="est-total" style="font-size:13px"><span>1人分（×1.0）の負担</span><span style="color:var(--text-info);font-weight:700">'+yen(P.perUnit)+'</span></div>'
+    +'<table class="wt" style="margin-top:10px">'
+    +(drvRows?'<tr><td colspan="4" style="font-size:10px;color:var(--text-info);padding:4px 4px 2px;font-weight:700">▼ 保護者の車ドライバー（立替 → 受取）</td></tr>'+drvRows:'')
+    +(teamRows?'<tr><td colspan="4" style="font-size:10px;color:#2e7d32;padding:8px 4px 2px;font-weight:700">▼ チーム車両（費用なし・按分を支払）</td></tr>'+teamRows:'')
+    +(paxRows?'<tr><td colspan="4" style="font-size:10px;color:var(--text-success);padding:8px 4px 2px;font-weight:700">▼ 同乗者（按分を支払）</td></tr>'+paxRows:'')
+    +'</table></div>';
+}
+function refreshAllEst(){updateFormula(); fCars.forEach(c=>renderEst(c.id));}
+function renderFormCars(){
+  checkWarn();
+  const cont=document.getElementById('cars-form');
+  if(!fCars.length){
+    cont.innerHTML='<div style="font-size:12px;color:var(--text-tertiary);padding:4px 0 10px;text-align:center">↓「車を追加」ボタンから追加してください</div>';
+    return;
+  }
+  let privateIdx=0, teamIdx=0;
+  cont.innerHTML=fCars.map((car)=>{
+    const otherDrivers=new Set(fCars.filter(x=>x.id!==car.id).map(x=>x.driver).filter(Boolean));
+    const dOpts=memberNames().filter(m=>!otherDrivers.has(m)).map(m=>'<option value="'+m+'"'+(car.driver===m?' selected':'')+'>'+m+(mWeight(m)!==1.0?' (×'+mWeight(m)+')':'')+'</option>').join('');
+    const driverField='<div class="field"><label class="lbl">ドライバー</label>'
+      +'<select id="driver-'+car.id+'" onchange="setDriver('+car.id+',this.value)"><option value="">-- 選択してください --</option>'+dOpts+'</select></div>';
+    const paxField='<div class="field"><label class="lbl">乗車した保護者・子供</label>'
+      +'<div class="pax-checks" id="pax-area-'+car.id+'"></div>'
+      +'<div class="hint">他の車に乗車中の方はグレーで選択不可</div></div>';
+    if(car.isTeam){
+      teamIdx++;
+      return '<div class="car-card" style="border-color:#a5d6a7">'
+        +'<div class="car-header">'
+        +'<span class="car-label"><i class="ti ti-bus"></i> チーム車両 '+teamIdx+'</span>'
+        +'<div style="display:flex;gap:6px;align-items:center">'
+        +'<button onclick="setCarType('+car.id+',false)" style="font-size:11px;padding:3px 8px;border:1px solid var(--border-primary);border-radius:100px;background:#fff;cursor:pointer;color:var(--text-secondary);font-family:var(--font-sans)">保護者の車に変更</button>'
+        +'<button class="del-car" onclick="removeFormCar('+car.id+')"><i class="ti ti-trash"></i></button>'
+        +'</div></div>'
+        +'<div style="font-size:11px;color:#2e7d32;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:6px 10px;margin-bottom:10px">'
+        +'<i class="ti ti-info-circle"></i> ガソリン代・高速代・駐車場代はチーム負担。乗車者は保護者の車費用の按分を支払います。'
+        +'</div>'
+        +driverField+paxField+'</div>';
+    }
+    privateIdx++;
+    const rtBtns=RT.map(o=>'<button id="rb-'+car.id+'-'+o.val+'" class="rt-opt'+(car.rt===o.val?' sel':'')+'" onclick="setRt('+car.id+',\''+o.val+'\')">'
+      +'<i class="ti '+(o.val==='outbound'?'ti-arrow-right':o.val==='return'?'ti-arrow-left':'ti-arrows-right-left')+'"></i>'
+      +o.label+'<span style="font-size:10px;opacity:.7"> ×'+o.mult+'</span></button>').join('');
+    return '<div class="car-card">'
+      +'<div class="car-header">'
+      +'<span class="car-label"><i class="ti ti-car"></i> 車 '+privateIdx+'</span>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<button onclick="setCarType('+car.id+',true)" style="font-size:11px;padding:3px 8px;border:1px solid var(--border-primary);border-radius:100px;background:#fff;cursor:pointer;color:var(--text-secondary);font-family:var(--font-sans)">チーム車両に変更</button>'
+      +'<button class="del-car" onclick="removeFormCar('+car.id+')"><i class="ti ti-trash"></i></button>'
+      +'</div></div>'
+      +driverField
+      +'<div class="field"><label class="lbl">経路</label><div class="rt-select">'+rtBtns+'</div>'
+      +'<div class="hint">往路・復路のみ＝距離×1、往復＝距離×2でガソリン代を計算</div></div>'
+      +paxField
+      +'<div class="g2">'
+      +'<div class="field"><label class="lbl">高速代（この車・実費）</label>'
+      +'<input type="number" id="toll-'+car.id+'" value="'+(car.toll||0)+'" min="0" oninput="renderEst('+car.id+')">'
+      +'<div class="hint">実費を手入力してください</div></div>'
+      +'<div class="field"><label class="lbl">駐車場代（この車・実費）</label>'
+      +'<input type="number" id="park-'+car.id+'" value="'+(car.parking||0)+'" min="0" oninput="renderEst('+car.id+')"></div></div>'
+      +'<div id="est-'+car.id+'"></div></div>';
+  }).join('');
+  fCars.forEach(c=>{renderPaxOnly(c.id); renderEst(c.id);});
+}
+
+function submitTrip(){
+  syncAllCars();
+  const date=document.getElementById('f-date').value;
+  const origin=getOrigin(), dest=getDest();
+  const dist=parseFloat(document.getElementById('f-dist').value)||0;
+  const gasRate=getGasRate();
+  const memo=document.getElementById('f-memo').value.trim();
+  if(!date)   return alert('日付を入力してください');
+  if(!dest)   return alert('行き先を入力してください');
+  if(!dist)   return alert('距離を入力してください');
+  if(!fCars.length) return alert('車を1台以上追加してください');
+  for(const c of fCars) if(!c.driver) return alert('すべての車のドライバーを選択してください');
+  const dn=fCars.map(c=>c.driver);
+  if(new Set(dn).size!==dn.length) return alert('同じドライバーが複数選択されています');
+  if(isSample){trips=[];isSample=false;lsSet('bpB_issample','0');}
+  if(origin&&origin!==lsGet('bpB_default_origin',DEFAULT_ORIGIN)) lsSet('bpB_default_origin',origin);
+  trips.push({id:Date.now(),date,origin,dest,dist,gasRate,memo,
+    cars:fCars.map(c=>({driver:c.driver,passengers:[...c.passengers],rt:c.rt,toll:c.toll,parking:c.parking,isTeam:c.isTeam||false}))});
+  trips.sort((a,b)=>a.date.localeCompare(b.date));
+  saveT(); updateMonthSelects();
+  alert('記録を追加しました！');
+  ['f-dest','f-dist','f-memo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-gasrate').value='30';
+  document.getElementById('f-date').valueAsDate=new Date();
+  fCars=[]; renderFormCars(); updateFormula(); updateRouteBar();
+  // GAS URLが設定されていれば自動Push
+  const autoGasUrl=(document.getElementById('gas-url').value||lsGet('bpB_gas_url','')).trim();
+  if(autoGasUrl) syncToGAS();
+}
+
+// ═══════════════════════════════════════════════
+//  記録一覧
+// ═══════════════════════════════════════════════
+function deleteTrip(id){
+  if(!confirm('この記録を削除しますか？')) return;
+  trips=trips.filter(t=>t.id!==id); saveT(); updateMonthSelects(); renderList();
+}
+function getMonths(){return[...new Set(trips.map(t=>t.date.substring(0,7)))].sort((a,b)=>b.localeCompare(a));}
+function updateMonthSelects(){
+  const months=getMonths();
+  ['list-month','settle-month'].forEach(id=>{
+    const el=document.getElementById(id), cur=el.value;
+    el.innerHTML=id==='list-month'?'<option value="">すべて</option>':'<option value="">月を選択</option>';
+    months.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m.replace('-','年')+'月';el.appendChild(o);});
+    if(months.includes(cur)) el.value=cur;
+  });
+}
+function toggleTrip(id){const el=document.getElementById('td-'+id); if(el) el.classList.toggle('open');}
+function renderList(){
+  const month=document.getElementById('list-month').value;
+  const data=month?trips.filter(t=>t.date.startsWith(month)):trips;
+  const body=document.getElementById('list-body');
+  if(!data.length){body.innerHTML='<div class="empty">記録がありません</div>'; return;}
+  body.innerHTML=[...data].reverse().map(t=>{
+    const gr=t.gasRate||30;
+    const tc=t.cars.reduce((s,c)=>c.isTeam?s:s+carBaseTotal(t.dist,c.rt||'roundtrip',gr,c.toll,c.parking),0);
+    const allP=[...new Set(t.cars.flatMap(c=>[c.driver,...c.passengers]))];
+    const teamCount=t.cars.filter(c=>c.isTeam).length;
+    const privateCount=t.cars.length-teamCount;
+    const carCountLabel=privateCount+'台'+(teamCount?'＋チーム車両'+teamCount+'台':'');
+    return '<div class="trip-item">'
+      +'<div class="trip-head" onclick="toggleTrip('+t.id+')">'
+      +'<div><div style="font-size:13px;font-weight:700">'+t.date.replace(/-/g,'/')+'  '+t.dest+'</div>'
+      +(t.memo?'<div style="font-size:11px;color:var(--text-tertiary);margin-top:1px">'+t.memo+'</div>':'')
+      +'<div style="font-size:11px;color:var(--text-secondary);margin-top:3px">'
+      +(t.origin?'<span style="color:var(--text-success)">'+t.origin+'</span> → ':'')+t.dest
+      +' ／ '+carCountLabel+'・'+allP.length+'名・計'+yen(tc)+'</div></div>'
+      +'<div style="display:flex;gap:8px;align-items:center">'
+      +'<button class="del-trip" onclick="event.stopPropagation();deleteTrip('+t.id+')"><i class="ti ti-trash"></i></button>'
+      +'<i class="ti ti-chevron-down" style="font-size:14px;color:var(--text-tertiary)"></i></div></div>'
+      +'<div class="trip-body" id="td-'+t.id+'">'
+      +'<div style="font-size:11px;color:var(--text-tertiary);padding:4px 0 8px">'+(t.origin?t.origin+' → ':'')+t.dest+' ／ 片道'+t.dist+'km・'+gr+'円/km</div>'
+      +(()=>{
+        const P=calcTripPooled(t.dist,gr,t.cars);
+        const privateDriverSet=new Set(t.cars.filter(c=>!c.isTeam).map(c=>c.driver));
+        const teamDriverSet=new Set(t.cars.filter(c=>c.isTeam).map(c=>c.driver));
+        const carHtml=t.cars.map(c=>{
+          if(c.isTeam){
+            return '<div class="car-row" style="border-color:#a5d6a7">'
+              +'<div class="car-row-head"><span><i class="ti ti-bus"></i> '+c.driver+' <span class="rt-badge" style="background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7">チーム車両</span></span>'
+              +'<span style="color:#2e7d32;font-size:11px">チーム負担</span></div>'
+              +'<div style="margin-top:6px"><span class="pax-chip" style="background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7">'+c.driver+'</span>'
+              +c.passengers.map(p=>'<span class="pax-chip">'+p+(mWeight(p)!==1?'<span style="font-size:10px;opacity:.7"> ×'+mWeight(p)+'</span>':'')+'</span>').join('')+'</div>'
+              +'</div>';
+          }
+          const rt=c.rt||'roundtrip';
+          const carTotal=carBaseTotal(t.dist,rt,gr,c.toll,c.parking);
+          return '<div class="car-row">'
+            +'<div class="car-row-head"><span><i class="ti ti-car"></i> '+c.driver+' <span class="rt-badge">'+rtLabel(rt)+'</span></span><span>'+yen(carTotal)+'</span></div>'
+            +'<div class="dr"><span>ガソリン</span><span>'+yen(carGas(t.dist,rt,gr))+'</span></div>'
+            +'<div class="dr"><span>高速</span><span>'+yen(c.toll)+'</span></div>'
+            +'<div class="dr"><span>駐車場</span><span>'+yen(c.parking)+'</span></div>'
+            +'<div style="margin-top:6px"><span class="pax-chip" style="background:var(--bg-info);color:var(--text-info);border-color:var(--border-info)">'+c.driver+'</span>'
+            +c.passengers.map(p=>'<span class="pax-chip">'+p+(mWeight(p)!==1?'<span style="font-size:10px;opacity:.7"> ×'+mWeight(p)+'</span>':'')+'</span>').join('')+'</div>'
+            +'</div>';
+        }).join('');
+        const poolHtml='<div class="car-row" style="background:var(--bg-info);border-color:var(--border-info)">'
+          +'<div class="car-row-head" style="margin-bottom:6px"><span style="color:var(--text-info);font-size:12px">全体プール精算</span>'
+          +'<span style="color:var(--text-info);font-weight:700">'+yen(P.grandTotal)+'</span></div>'
+          +'<div class="dr" style="margin-bottom:6px"><span style="color:var(--text-secondary)">'+Math.round(P.totalW*10)/10+'人分で均等割り</span>'
+          +'<span style="font-weight:700;color:var(--text-info)">'+yen(P.perUnit)+'/人分</span></div>'
+          +P.carCosts.filter(c=>!c.isTeam&&c.driver).map(c=>'<div class="dr"><span>'+c.driver+'（ドライバー受取）</span><span style="color:var(--text-info);font-weight:600">'+yen(P.driverNet[c.driver]||0)+'</span></div>').join('')
+          +P.participants.filter(p=>!privateDriverSet.has(p.name)).map(p=>'<div class="dr"><span>'+p.name+(p.w!==1?' ×'+p.w:'')+(teamDriverSet.has(p.name)||P.carCosts.filter(c=>c.isTeam).flatMap(c=>c.passengers).includes(p.name)?'（チーム車両・支払）':'（同乗者支払）')+'</span><span style="color:var(--text-success);font-weight:600">'+yen(P.shares[p.name])+'</span></div>').join('')
+          +'</div>';
+        return carHtml+poolHtml;
+      })()+'</div></div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  月次精算
+// ═══════════════════════════════════════════════
+function calcSettle(data){
+  // 全体プール方式：全車費用合算→全参加者の重みで均等割り
+  // drvAmts = ドライバーが立替えた車費用の合計（グロス）
+  // paxAmts = 各人の個人負担分の合計（ドライバーも含む全員）
+  // 相殺後ネット = drvAmts - paxAmts
+  const paxAmts={},drvAmts={},paxTrips={},drvTrips={};
+  data.forEach(t=>{
+    const gr=t.gasRate||30;
+    const P=calcTripPooled(t.dist,gr,t.cars);
+    // 全参加者が個人負担分を支払う（ドライバーも含む）
+    P.participants.forEach(p=>{
+      paxAmts[p.name]=(paxAmts[p.name]||0)+P.shares[p.name];
+      paxTrips[p.name]=(paxTrips[p.name]||0)+1;
+    });
+    // ドライバーはその車の費用全額を立替（チーム車両は費用0のため除外）
+    P.carCosts.forEach(c=>{
+      if(c.driver&&!c.isTeam){
+        drvAmts[c.driver]=(drvAmts[c.driver]||0)+c.total;
+        drvTrips[c.driver]=(drvTrips[c.driver]||0)+1;
+      }
+    });
+  });
+  const famGroups={};
+  Object.entries(paxAmts).forEach(([name,amt])=>{
+    const fam=mFamily(name)||name;
+    if(!famGroups[fam]) famGroups[fam]={total:0,members:[]};
+    famGroups[fam].total+=amt;
+    famGroups[fam].members.push({name,amt,trips:paxTrips[name]||0});
+  });
+  return{drvAmts,drvTrips,paxAmts,famGroups};
+}
+function renderSettle(){
+  const month=document.getElementById('settle-month').value;
+  const body=document.getElementById('settle-body');
+  if(!month){body.innerHTML='<div class="empty">月を選択してください</div>'; return;}
+  const data=trips.filter(t=>t.date.startsWith(month));
+  if(!data.length){body.innerHTML='<div class="empty">この月の記録がありません</div>'; return;}
+  const{drvAmts,drvTrips,paxAmts,famGroups}=calcSettle(data);
+  const totalPay=Object.values(drvAmts).reduce((s,v)=>s+v,0);
+  const label=month.replace('-','年')+'月';
+  const sd=Object.entries(drvAmts).sort((a,b)=>b[1]-a[1]);
+  const sfam=Object.entries(famGroups).sort((a,b)=>b[1].total-a[1].total);
+
+  // 家族単位の相殺計算
+  const allN=new Set([...Object.keys(drvAmts),...Object.keys(paxAmts)]);
+  const netByFam={};
+  allN.forEach(name=>{
+    const fam=mFamily(name)||name;
+    if(!netByFam[fam]) netByFam[fam]={receives:0,owes:0,members:[]};
+    netByFam[fam].receives+=drvAmts[name]||0;
+    netByFam[fam].owes+=paxAmts[name]||0;
+    netByFam[fam].members.push({name,receives:drvAmts[name]||0,owes:paxAmts[name]||0});
+  });
+  const netFamList=Object.entries(netByFam).map(([fam,d])=>({
+    fam,receives:d.receives,owes:d.owes,net:d.receives-d.owes,members:d.members,isMulti:d.members.length>1
+  })).sort((a,b)=>b.net-a.net);
+
+  let famRows='';
+  sfam.forEach(([fam,fg])=>{
+    const multi=fg.members.length>1;
+    famRows+='<tr class="fam-row"><td>'+(multi?'<i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>':'')+fam+'</td>'
+      +'<td style="text-align:right">'+yen(fg.total)+'</td>'
+      +'<td style="text-align:right;color:var(--text-success)">'+yen(Math.ceil(fg.total/10)*10)+'</td></tr>';
+    if(multi){
+      famRows+=fg.members.map(m=>'<tr class="sub-row"><td>'+m.name+(mWeight(m.name)!==1?'<span style="font-size:10px;margin-left:3px">×'+mWeight(m.name)+'</span>':'')+' ('+m.trips+'回)</td>'
+        +'<td style="text-align:right">'+yenD(m.amt)+'</td><td></td></tr>').join('');
+    }
+  });
+
+  const netRows=netFamList.map(r=>{
+    const n=r.net;
+    let nc='';
+    if(n>0.5)      nc='<td class="net-recv" style="text-align:right">受取 '+yen(n)+'</td>';
+    else if(n<-0.5) nc='<td class="net-pay"  style="text-align:right">支払 '+yen(-n)+'</td>';
+    else           nc='<td class="net-zero" style="text-align:right">相殺（¥0）</td>';
+    let rows='<tr class="net-fam-row">'
+      +'<td>'+(r.isMulti?'<i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>':'')+r.fam+'</td>'
+      +'<td style="text-align:right;color:var(--text-info)">'+(r.receives>0?yen(r.receives):'−')+'</td>'
+      +'<td style="text-align:right;color:var(--text-success)">'+(r.owes>0?yen(r.owes):'−')+'</td>'
+      +nc+'</tr>';
+    if(r.isMulti){
+      rows+=r.members.map(m=>{
+        const mn=m.receives-m.owes;
+        const mc=mn>0.5?'受取 '+yen(mn):mn<-0.5?'支払 '+yen(-mn):'±0';
+        return '<tr class="sub-row"><td style="padding-left:22px">└ '+m.name+'</td>'
+          +'<td style="text-align:right">'+(m.receives>0?yenD(m.receives):'−')+'</td>'
+          +'<td style="text-align:right">'+(m.owes>0?yenD(m.owes):'−')+'</td>'
+          +'<td style="text-align:right;font-size:11px;color:var(--text-tertiary)">'+mc+'</td></tr>';
+      }).join('');
+    }
+    return rows;
+  }).join('');
+
+  body.innerHTML=
+    '<div style="font-size:16px;font-weight:700;margin-bottom:12px">'+label+' 精算書 <span class="badge">'+data.length+'回遠征</span></div>'
+    +'<div class="stat-grid">'
+    +'<div class="stat"><div class="stat-lbl">ドライバー</div><div class="stat-val">'+Object.keys(drvAmts).length+'名</div></div>'
+    +'<div class="stat"><div class="stat-lbl">参加家族</div><div class="stat-val">'+sfam.length+'組</div></div>'
+    +'<div class="stat"><div class="stat-lbl">支払い総額</div><div class="stat-val" style="font-size:16px;color:var(--text-info)">'+yen(totalPay)+'</div></div>'
+    +'</div>'
+
+    +'<div class="section-title"><i class="ti ti-arrow-up-right" style="color:var(--text-info)"></i> ドライバーへの支払い <span class="flow-label fl-pay">会計係 → ドライバー</span></div>'
+    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">各ドライバーが立替えた車費用（グロス）。個人負担分は下の相殺後まとめで差し引かれます。</div>'
+    +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
+    +'<table class="settle-table"><thead><tr><th style="width:40%">ドライバー</th><th>回数</th><th style="text-align:right;color:var(--text-info)">立替金額</th></tr></thead><tbody>'
+    +sd.map(([n,t])=>'<tr><td><strong>'+n+'</strong></td><td>'+drvTrips[n]+'回</td><td style="text-align:right;font-weight:700;color:var(--text-info)">'+yen(t)+'</td></tr>').join('')
+    +'<tr style="background:var(--bg-secondary)"><td colspan="2" style="text-align:right;font-size:12px;color:var(--text-secondary)">合計</td><td style="text-align:right;font-weight:700">'+yen(totalPay)+'</td></tr>'
+    +'</tbody></table></div>'
+
+    +'<div class="section-title"><i class="ti ti-arrow-down-left" style="color:var(--text-success)"></i> 個人負担徴収リスト（家族単位） <span class="flow-label fl-collect">会計係 ← 参加者全員</span></div>'
+    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">ドライバーを含む全参加者の個人負担分（全体プールを重みで均等割り）。</div>'
+    +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
+    +'<table class="settle-table"><thead><tr><th style="width:45%">家族 / 保護者</th><th style="text-align:right">個人負担合計</th><th style="text-align:right;color:var(--text-success)">切り上げ目安</th></tr></thead><tbody>'
+    +famRows
+    +'<tr style="background:var(--bg-secondary)"><td style="text-align:right;font-size:12px;color:var(--text-secondary)">合計（切り上げ）</td><td></td><td style="text-align:right;font-weight:700">'+yen(sfam.reduce((s,[,fg])=>s+Math.ceil(fg.total/10)*10,0))+'</td></tr>'
+    +'</tbody></table></div>'
+
+    +'<div class="section-title"><i class="ti ti-arrows-exchange" style="color:var(--text-warning)"></i> 相殺後まとめ（家族単位） <span class="flow-label fl-net">差引</span></div>'
+    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:8px">立替金額 − 個人負担分 ＝ 実際に受け取る／支払う金額。複数遠征の運転・乗車も自動相殺。</div>'
+    +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
+    +'<table class="settle-table"><thead><tr><th style="width:35%">家族 / 保護者</th><th style="text-align:right">受取（ドライバー）</th><th style="text-align:right">負担（同乗）</th><th style="text-align:right">差引</th></tr></thead><tbody>'
+    +netRows
+    +'<tr style="background:var(--bg-secondary)"><td colspan="3" style="text-align:right;font-size:12px;color:var(--text-secondary)">会計係の実質支払い総額</td><td style="text-align:right;font-weight:700">'+yen(netFamList.filter(r=>r.net>0).reduce((s,r)=>s+r.net,0))+'</td></tr>'
+    +'</tbody></table></div>'
+
+    +'<div class="section-title"><i class="ti ti-file-text"></i> 遠征別明細</div>'
+    +data.map(t=>{
+      const gr=t.gasRate||30;
+      const P=calcTripPooled(t.dist,gr,t.cars);
+      const driverSet=new Set(t.cars.map(c=>c.driver));
+      const carLines=P.carCosts.map(c=>'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:1px">'
+        +'<i class="ti ti-car" style="font-size:10px"></i> '+c.driver+' <span class="rt-badge" style="font-size:9px">'+rtLabel(c.rt)+'</span> '+yen(c.total)+'</div>').join('');
+      const personLines=P.participants.map(p=>{
+        const isDriver=driverSet.has(p.name);
+        const net=isDriver?(P.driverNet[p.name]||0):0;
+        const share=P.shares[p.name]||0;
+        const payAmt=Math.ceil(share/10)*10;
+        const recvAmt=isDriver?Math.round(net):0;
+        return '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border-tertiary);display:flex;justify-content:space-between;align-items:center">'
+          +'<span style="color:var(--text-secondary)">'+p.name+(p.w!==1?'<span style="font-size:10px;margin-left:2px">×'+p.w+'</span>':'')
+          +'<span style="font-size:10px;color:var(--text-tertiary);margin-left:4px">（'+(isDriver?'運転':'同乗')+'）</span></span>'
+          +(isDriver
+            ?'<span><span style="font-size:10px;color:var(--text-tertiary)">負担'+yen(share)+'</span> → <strong style="color:var(--text-info)">受取 '+yen(recvAmt)+'</strong></span>'
+            :'<strong style="color:var(--text-success)">支払 '+yen(payAmt)+'</strong>')
+          +'</div>';
+      }).join('');
+      return '<div class="card" style="margin-bottom:8px">'
+        +'<div style="font-size:13px;font-weight:700;margin-bottom:3px">'+t.date.replace(/-/g,'/')+' '+t.dest+(t.memo?' — '+t.memo:'')+'</div>'
+        +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">'+(t.origin?t.origin+' → ':'')+t.dest+' ／ 片道'+t.dist+'km・'+gr+'円/km</div>'
+        +carLines
+        +'<div style="font-size:12px;font-weight:700;color:var(--text-info);margin:6px 0 4px">'
+        +'全体プール: '+yen(P.grandTotal)+' ÷ '+Math.round(P.totalW*10)/10+'人分 = '+yen(P.perUnit)+'/人分</div>'
+        +personLines+'</div>';
+    }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  GAS読み込み（共有データ取得）
+// ═══════════════════════════════════════════════
+async function loadFromGAS(silent){
+  const url=(document.getElementById('gas-url').value||lsGet('bpB_gas_url','')).trim();
+  if(!url) return false;
+  const st=document.getElementById('load-status');
+  if(st&&!silent){st.className='gas-status gas-ing'; st.textContent='⏳ GASから最新データを読み込み中...';}
+  try{
+    const res=await fetch(url,{redirect:'follow'});
+    const json=await res.json();
+    if(json.status==='ok'&&json.data){
+      const d=json.data;
+      let updated=false;
+      if(d.members&&d.members.length){members=d.members; saveM(); updated=true;}
+      if(d.trips&&d.trips.length){trips=d.trips; saveT(); updated=true;}
+      if(updated){
+        isSample=false; lsSet('bpB_issample','0');
+        lsSet('bpB_last_load',new Date().toISOString());
+        updateMonthSelects(); renderMemberList(); updateFamilyDatalist(); checkWarn();
+        showSampleBanner();
+      }
+      const gasTime=d.savedAt?new Date(d.savedAt).toLocaleString('ja-JP'):'不明';
+      if(st&&!silent){
+        st.className='gas-status gas-ok';
+        st.textContent='✓ 読み込み完了（'+new Date().toLocaleTimeString('ja-JP')+'） / GAS保存時刻: '+gasTime;
+      }
+      return true;
+    }
+    if(st&&!silent){st.className='gas-status gas-err'; st.textContent='✗ GASにデータがありません（まだ同期されていません）';}
+    return false;
+  }catch(err){
+    if(st&&!silent){st.className='gas-status gas-err'; st.textContent='✗ 読み込み失敗: '+err.message;}
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  GAS同期（フォーム＋隠しiframe方式）
+// ═══════════════════════════════════════════════
+async function syncToGAS(){
+  const url=(document.getElementById('gas-url').value||'').trim();
+  if(!url){alert('GAS URLを入力してください'); return;}
+  const st=document.getElementById('sync-status');
+  st.className='gas-status gas-ing'; st.textContent='⏳ 送信中...（約3秒かかります）';
+
+  try{
+    const payload=JSON.stringify({action:'sync_all',members,trips});
+
+    // 隠しiframeを準備（一度だけ作成）
+    let iframe=document.getElementById('gas-sync-frame');
+    if(!iframe){
+      iframe=document.createElement('iframe');
+      iframe.id='gas-sync-frame'; iframe.name='gas-sync-frame'; iframe.style.display='none';
+      document.body.appendChild(iframe);
+    }
+
+    // フォームで送信 → CORSエラーが発生しない
+    const form=document.createElement('form');
+    form.method='POST'; form.action=url; form.target='gas-sync-frame'; form.style.display='none';
+    const input=document.createElement('input');
+    input.type='hidden'; input.name='payload'; input.value=payload;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    // 3秒後に完了とみなす（レスポンスはCross-originで読めない）
+    await new Promise(r=>setTimeout(r,3000));
+    st.className='gas-status gas-ok';
+    st.textContent='✓ 送信完了（'+new Date().toLocaleTimeString()+'） Googleシートをご確認ください';
+    lsSet('bpB_last_sync',new Date().toISOString());
+
+  }catch(err){
+    st.className='gas-status gas-err'; st.textContent='✗ エラー: '+err.message;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  エクスポート / インポート
+// ═══════════════════════════════════════════════
+function exportCSV(){
+  const BOM='\uFEFF';
+  const header=['日付','出発地','行き先','距離km','ガソリン単価','メモ','ドライバー','経路','同乗者','高速代','駐車場代','合計','ドライバー受取'];
+  const rows=[header];
+  trips.forEach(t=>{
+    const gr=t.gasRate||30;
+    t.cars.forEach(c=>{
+      const W=calcWeighted(t.dist,c.rt||'roundtrip',gr,c.toll,c.parking,c.driver,c.passengers);
+      rows.push([t.date,t.origin||'',t.dest,t.dist,gr,t.memo||'',c.driver,rtLabel(c.rt||'roundtrip'),c.passengers.join('・'),c.toll,c.parking,Math.round(W.total),Math.round(W.driverReceives)]);
+    });
+  });
+  const csv=BOM+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='baseball_transport_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+function exportJSON(){
+  const data={version:1,exportedAt:new Date().toISOString(),members,trips};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download='baseball_transport_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function importJSON(){
+  const file=document.getElementById('import-file').files[0];
+  if(!file){alert('ファイルを選択してください'); return;}
+  if(!confirm('現在のデータが上書きされます。続けますか？')) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.members){members=data.members; saveM();}
+      if(data.trips){trips=data.trips; saveT();}
+      isSample=false; lsSet('bpB_issample','0');
+      updateMonthSelects(); renderMemberList(); updateFamilyDatalist();
+      alert('インポートが完了しました');
+    }catch(err){alert('読み込みに失敗しました');}
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════
+//  初期化
+// ═══════════════════════════════════════════════
+document.getElementById('f-origin').value=lsGet('bpB_default_origin',DEFAULT_ORIGIN);
+const gasUrlEl=document.getElementById('gas-url');
+const GAS_DEFAULT_URL='';
+if(gasUrlEl) gasUrlEl.value=lsGet('bpB_gas_url',GAS_DEFAULT_URL);
+updateMonthSelects(); renderMemberList(); updateFamilyDatalist(); checkWarn();
+document.getElementById('f-date').valueAsDate=new Date();
+updateFormula(); updateRouteBar(); showSampleBanner();
+
+// 起動時にGASから自動読み込み（URLが設定されている場合）
+(async()=>{
+  const url=lsGet('bpB_gas_url',GAS_DEFAULT_URL);
+  if(url){
+    const ok=await loadFromGAS(true); // silent=true でステータス非表示
+    if(ok){
+      updateMonthSelects(); renderMemberList(); updateFamilyDatalist(); checkWarn(); showSampleBanner();
+      // データタブを表示中なら load-status にも表示
+      const st=document.getElementById('load-status');
+      if(st) {st.className='gas-status gas-ok'; st.textContent='✓ 起動時にGASから自動読み込み済み（'+new Date().toLocaleTimeString('ja-JP')+'）';}
+    }
+  }
+})();
+</script>
+</body>
+</html>
