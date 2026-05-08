@@ -974,65 +974,68 @@ function renderSettle(){
     netByFam[fam].members.push({name,receives:drvAmts[name]||0,owes:paxAmts[name]||0});
   });
   const c10=v=>Math.ceil(Math.max(0,v)/10)*10;
+  const rnd=v=>Math.round(v||0);
 
-  // 切り上げ後の各合計を計算
-  const paxTotalRounded=sfam.reduce((s,[,fg])=>s+c10(fg.total),0);
-  const drvBaseRounded={};
-  sd.forEach(([n,t])=>{drvBaseRounded[n]=c10(t);});
-  const drvTotalBase=sd.reduce((s,[,t])=>s+c10(t),0);
-  // 差額を回数が多いドライバーから順に¥10刻みで配分
-  const diff=paxTotalRounded-drvTotalBase;
-  const drvAdj={};
-  sd.forEach(([n])=>{drvAdj[n]=0;});
-  if(diff>0){
-    const units=Math.round(diff/10);
-    const drvSorted=[...sd].sort((a,b)=>(drvTrips[b[0]]||0)-(drvTrips[a[0]]||0));
-    const base=Math.floor(units/drvSorted.length);
-    const extra=units%drvSorted.length;
-    drvSorted.forEach(([n],i)=>{drvAdj[n]=(base+(i<extra?1:0))*10;});
-  }
-  const drvFinal=n=>(drvBaseRounded[n]||0)+(drvAdj[n]||0);
-  const finalTotal=paxTotalRounded; // 両合計を一致させる
-
+  // 家族単位の生のnetを計算
   const netFamList=Object.entries(netByFam).map(([fam,d])=>({
-    fam,receives:d.receives,owes:d.owes,net:d.receives-d.owes,members:d.members,isMulti:d.members.length>1
+    fam,
+    receives:rnd(d.receives),
+    owes:    rnd(d.owes),
+    net:     rnd(d.receives)-rnd(d.owes),
+    members: d.members,
+    isMulti: d.members.length>1,
+    finalAmt:0
   })).sort((a,b)=>b.net-a.net);
+
+  const drvTotal=sd.reduce((s,[n])=>s+rnd(drvAmts[n]),0);
+
+  // ── 相殺後まとめ：差分を¥10切り上げ、端数は遠征費係が吸収 ──
+  const rcvList=netFamList.filter(r=>r.net>0.5);
+  const payList=netFamList.filter(r=>r.net<-0.5);
+  rcvList.forEach(r=>{r.finalAmt=c10(r.net);});
+  payList.forEach(r=>{r.finalAmt=c10(-r.net);});
+  const tReceived=rcvList.reduce((s,r)=>s+r.finalAmt,0);
+  const tPaid    =payList.reduce((s,r)=>s+r.finalAmt,0);
+  const tSlack   =tPaid-tReceived; // 遠征費係が吸収する端数（¥0〜¥10×人数程度）
 
   let famRows='';
   sfam.forEach(([fam,fg])=>{
     const multi=fg.members.length>1;
-    famRows+='<tr class="fam-row"><td>'+(multi?'<i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>':'')+fam+'</td>'
-      +'<td style="text-align:right;color:var(--text-success);font-weight:700">'+yen(c10(fg.total))+'</td></tr>';
+    famRows+='<tr class="fam-row"><td><i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>'+fam+'</td>'
+      +'<td style="text-align:right;color:var(--text-success);font-weight:700">'+yen(rnd(fg.total))+'</td></tr>';
     if(multi){
       famRows+=fg.members.map(m=>'<tr class="sub-row"><td>'+m.name+(mWeight(m.name)!==1?'<span style="font-size:10px;margin-left:3px">×'+mWeight(m.name)+'</span>':'')+' ('+m.trips+'回)</td>'
-        +'<td style="text-align:right">'+yen(c10(m.amt))+'</td></tr>').join('');
+        +'<td style="text-align:right">'+yen(rnd(m.amt))+'</td></tr>').join('');
     }
   });
 
   const netRows=netFamList.map(r=>{
-    // 受取はdrvFinal（端数調整済）、負担はc10(家族合計)を使用
-    const rR=r.members.reduce((s,m)=>s+(drvAmts[m.name]?drvFinal(m.name):0),0);
-    const rO=c10(r.owes);
-    const n=rR-rO;
+    const netDisp=r.net>0.5?'<span style="color:var(--text-info)">+'+yen(Math.round(r.net))+'</span>'
+                 :r.net<-0.5?'<span style="color:var(--text-danger)">−'+yen(Math.round(-r.net))+'</span>'
+                 :'<span style="color:var(--text-tertiary)">±0</span>';
     let nc='';
-    if(n>0)       nc='<td class="net-recv" style="text-align:right">受取 '+yen(n)+'</td>';
-    else if(n<0)  nc='<td class="net-pay"  style="text-align:right">支払 '+yen(-n)+'</td>';
-    else          nc='<td class="net-zero" style="text-align:right">相殺（¥0）</td>';
+    if(r.net>0.5)       nc='<td class="net-recv" style="text-align:right">受取 '+yen(r.finalAmt)+'</td>';
+    else if(r.net<-0.5) nc='<td class="net-pay"  style="text-align:right">支払 '+yen(r.finalAmt)+'</td>';
+    else                nc='<td class="net-zero" style="text-align:right">相殺（¥0）</td>';
     let rows='<tr class="net-fam-row">'
-      +'<td>'+(r.isMulti?'<i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>':'')+r.fam+'</td>'
-      +'<td style="text-align:right;color:var(--text-info)">'+(rR>0?yen(rR):'−')+'</td>'
-      +'<td style="text-align:right;color:var(--text-success)">'+(rO>0?yen(rO):'−')+'</td>'
+      +'<td><i class="ti ti-home" style="font-size:11px;margin-right:3px"></i>'+r.fam+'</td>'
+      +'<td style="text-align:right;color:var(--text-info)">'+(r.receives>0?yen(r.receives):'−')+'</td>'
+      +'<td style="text-align:right;color:var(--text-success)">'+(r.owes>0?yen(r.owes):'−')+'</td>'
+      +'<td style="text-align:right">'+netDisp+'</td>'
       +nc+'</tr>';
     if(r.isMulti){
       rows+=r.members.map(m=>{
-        const mR=drvAmts[m.name]?drvFinal(m.name):0;
-        const mO=c10(m.owes);
+        const mR=rnd(drvAmts[m.name]||0);
+        const mO=rnd(m.owes);
         const mn=mR-mO;
-        const mc=mn>0?'受取 '+yen(mn):mn<0?'支払 '+yen(-mn):'±0';
+        const mnDisp=mn>0.5?'<span style="color:var(--text-info)">+'+yen(Math.round(mn))+'</span>'
+                    :mn<-0.5?'<span style="color:var(--text-danger)">−'+yen(Math.round(-mn))+'</span>'
+                    :'<span style="color:var(--text-tertiary)">±0</span>';
         return '<tr class="sub-row"><td style="padding-left:22px">└ '+m.name+'</td>'
           +'<td style="text-align:right">'+(mR>0?yen(mR):'−')+'</td>'
           +'<td style="text-align:right">'+(mO>0?yen(mO):'−')+'</td>'
-          +'<td style="text-align:right;font-size:11px;color:var(--text-tertiary)">'+mc+'</td></tr>';
+          +'<td style="text-align:right;font-size:11px">'+mnDisp+'</td>'
+          +'<td></td></tr>';
       }).join('');
     }
     return rows;
@@ -1043,30 +1046,36 @@ function renderSettle(){
     +'<div class="stat-grid">'
     +'<div class="stat"><div class="stat-lbl">ドライバー</div><div class="stat-val">'+Object.keys(drvAmts).length+'名</div></div>'
     +'<div class="stat"><div class="stat-lbl">参加家族</div><div class="stat-val">'+sfam.length+'組</div></div>'
-    +'<div class="stat"><div class="stat-lbl">支払い総額</div><div class="stat-val" style="font-size:16px;color:var(--text-info)">'+yen(finalTotal)+'</div></div>'
+    +'<div class="stat"><div class="stat-lbl">立替合計</div><div class="stat-val" style="font-size:16px;color:var(--text-info)">'+yen(drvTotal)+'</div></div>'
     +'</div>'
 
-    +'<div class="section-title"><i class="ti ti-arrow-up-right" style="color:var(--text-info)"></i> ドライバーへの支払い <span class="flow-label fl-pay">会計係 → ドライバー</span></div>'
-    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">各ドライバーが立替えた車費用（グロス）。個人負担分は下の相殺後まとめで差し引かれます。</div>'
+    +'<div class="section-title"><i class="ti ti-arrow-up-right" style="color:var(--text-info)"></i> ドライバー立替金額 <span class="flow-label fl-pay">遠征費係 → ドライバー</span></div>'
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
-    +'<table class="settle-table"><thead><tr><th style="width:40%">ドライバー</th><th>回数</th><th style="text-align:right;color:var(--text-info)">受取金額</th></tr></thead><tbody>'
-    +sd.map(([n])=>'<tr><td><strong>'+n+'</strong></td><td>'+drvTrips[n]+'回</td><td style="text-align:right;font-weight:700;color:var(--text-info)">'+yen(drvFinal(n))+(drvAdj[n]>0?'<span style="font-size:10px;color:var(--text-tertiary);margin-left:3px">（端数調整込）</span>':'')+'</td></tr>').join('')
-    +'<tr style="background:var(--bg-secondary)"><td colspan="2" style="text-align:right;font-size:12px;color:var(--text-secondary)">合計</td><td style="text-align:right;font-weight:700">'+yen(finalTotal)+'</td></tr>'
+    +'<table class="settle-table"><thead><tr><th style="width:40%">ドライバー</th><th>回数</th><th style="text-align:right;color:var(--text-info)">立替金額</th></tr></thead><tbody>'
+    +sd.map(([n])=>'<tr><td><strong>'+n+'</strong></td><td>'+drvTrips[n]+'回</td><td style="text-align:right;font-weight:700;color:var(--text-info)">'+yen(rnd(drvAmts[n]))+'</td></tr>').join('')
+    +'<tr style="background:var(--bg-secondary)"><td colspan="2" style="text-align:right;font-size:12px;color:var(--text-secondary)">合計</td><td style="text-align:right;font-weight:700">'+yen(drvTotal)+'</td></tr>'
     +'</tbody></table></div>'
 
-    +'<div class="section-title"><i class="ti ti-arrow-down-left" style="color:var(--text-success)"></i> 個人負担徴収リスト（家族単位） <span class="flow-label fl-collect">会計係 ← 参加者全員</span></div>'
-    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">ドライバーを含む全参加者の個人負担分（全体プールを重みで均等割り）。</div>'
+    +'<div class="section-title"><i class="ti ti-arrow-down-left" style="color:var(--text-success)"></i> 個人負担（家族単位） <span class="flow-label fl-collect">遠征費係 ← 参加者全員</span></div>'
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
-    +'<table class="settle-table"><thead><tr><th style="width:55%">家族 / 保護者</th><th style="text-align:right;color:var(--text-success)">個人負担（切り上げ）</th></tr></thead><tbody>'
+    +'<table class="settle-table"><thead><tr><th style="width:55%">家族 / 保護者</th><th style="text-align:right;color:var(--text-success)">個人負担</th></tr></thead><tbody>'
     +famRows
-    +'<tr style="background:var(--bg-secondary)"><td style="text-align:right;font-size:12px;color:var(--text-secondary)">合計</td><td style="text-align:right;font-weight:700">'+yen(sfam.reduce((s,[,fg])=>s+c10(fg.total),0))+'</td></tr>'
+    +'<tr style="background:var(--bg-secondary)"><td style="text-align:right;font-size:12px;color:var(--text-secondary)">合計</td><td style="text-align:right;font-weight:700">'+yen(sfam.reduce((s,[,fg])=>s+rnd(fg.total),0))+'</td></tr>'
     +'</tbody></table></div>'
 
-    +'<div class="section-title"><i class="ti ti-arrows-exchange" style="color:var(--text-warning)"></i> 相殺後まとめ（家族単位） <span class="flow-label fl-net">差引</span></div>'
-    +'<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:8px">立替金額 − 個人負担分 ＝ 実際に受け取る／支払う金額。複数遠征の運転・乗車も自動相殺。</div>'
+    +'<div class="section-title"><i class="ti ti-arrows-exchange" style="color:var(--text-warning)"></i> 相殺後まとめ（家族単位） <span class="flow-label fl-net">精算額</span></div>'
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">'
-    +'<table class="settle-table"><thead><tr><th style="width:35%">家族 / 保護者</th><th style="text-align:right">受取（ドライバー）</th><th style="text-align:right">負担（同乗）</th><th style="text-align:right">差引</th></tr></thead><tbody>'
+    +'<table class="settle-table"><thead><tr><th style="width:32%">家族 / 保護者</th><th style="text-align:right">受取</th><th style="text-align:right">負担</th><th style="text-align:right">差</th><th style="text-align:right">精算額</th></tr></thead><tbody>'
     +netRows
+    +'<tr style="background:var(--bg-secondary);border-top:2px solid var(--border-secondary)">'
+    +'<td colspan="4" style="text-align:right;font-size:12px;color:var(--text-secondary)">支払合計</td>'
+    +'<td style="text-align:right;font-weight:700;color:var(--text-danger)">'+yen(tPaid)+'</td></tr>'
+    +'<tr style="background:var(--bg-secondary)">'
+    +'<td colspan="4" style="text-align:right;font-size:12px;color:var(--text-secondary)">受取合計</td>'
+    +'<td style="text-align:right;font-weight:700;color:var(--text-info)">'+yen(tReceived)+'</td></tr>'
+    +(tSlack!==0?'<tr style="background:#fffbeb;border-top:1px solid var(--border-warning)">'
+    +'<td colspan="4" style="text-align:right;font-size:12px;color:var(--text-warning)">遠征費係 吸収額</td>'
+    +'<td style="text-align:right;font-weight:700;color:var(--text-warning)">'+yen(tSlack)+'</td></tr>':'')
     +'</tbody></table></div>'
 
     +'<div class="section-title"><i class="ti ti-file-text"></i> 遠征別明細</div>'
